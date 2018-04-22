@@ -1,0 +1,228 @@
+{% include 'base.html' %}
+
+{% block extra_stylesheets %}
+  <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css" rel="stylesheet">
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-lg-12">
+      <h2>NFL Lineup Builder</h2>
+            <!-- Filter buttons -->
+      <div id="filterbtns">
+        <p><button id="ALL" class="tab_button btn btn-default active" type="button">ALL</button>
+        <button id="QB" class="tab_button btn btn-default" type="button">QB</button>
+        <button id="RB" class="tab_button btn btn-default" type="button">RB</button>
+        <button id="WR" class="tab_button btn btn-default" type="button">WR</button>
+        <button id="TE" class="tab_button btn btn-default" type="button">TE</button>
+        <button id="DST" class="tab_button btn btn-default" type="button">DST</button></p>
+      </div>
+      <form class="form-inline">
+        <input type="text" class="form-control" id="nlineups" placeholder="# Lineups">
+      <button id="Optimize" class="tab_button btn btn-default" type="submit">Optimize</button>
+      <table id="proj" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Position</th>
+            <th>Salary</th>
+            <th>Team</th>
+            <th>Opp</th>
+            <th>Inj</th>
+            <th>Exclude</th>
+            <th>Lock</th>
+            <th>Max</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      </form>
+    </div>
+  </div>
+
+  <div id="lineups">Lineups Generated</div>
+{% endblock %}
+
+{% block extra_javascripts %}
+  <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+      $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+      } );
+      var table = $('#proj').DataTable({
+        //"processing": true,
+        //"serverSide": true,
+	      "ajax": { "url": "{{ url_for('nfl_dk_projections') }}",
+		      "dataSrc": "data"
+	      },
+	      'columnDefs': [{
+         'targets': 6,
+         'searchable': false,
+         'orderable': false,
+         'className': 'dt-body-center',
+         'render': function (data, type, full, meta){
+             return '<input type="checkbox" name="id[]" class="exclude" value="' + $('<div/>').text(data).html() + '">';
+         }
+      },
+      {
+         'targets': 7,
+         'searchable': false,
+         'orderable': false,
+         'className': 'dt-body-center',
+         'render': function (data, type, full, meta){
+             return '<input type="checkbox" name="id[]" class="lock" value="' + $('<div/>').text(data).html() + '">';
+         }
+      },
+         {
+         'targets': 8,
+         'searchable': false,
+         'orderable': false,
+         'className': 'dt-body-center',
+         'render': function (data, type, full, meta){
+             return '<input type="text" name="id[]" class="cap" value="' + $('<div/>').text(data).html() + '">';
+         }
+      }],
+        //'rowCallback': function(row, data, index){
+        //  var calval = (data[7] / data[9]) * 1000;
+        //  if(calval < 3 ){
+        //    $(row).find('td:eq(7)').addClass('projyellow');4
+        //  }
+        //  if(calval > 3 ){
+        //    $(row).find('td:eq(7)').addClass('projgreen');
+        //  }
+        //  if(calval < 2 ){
+        //    $(row).find('td:eq(7)').addClass('projred');
+        //  }
+       //},
+        scrollY:        '50vh',
+        scrollCollapse: true,
+       	"order": [[ 3, "asc" ]],
+	      "paging": false,
+	      "info": false
+      });
+      // filter functions
+    // filter positions
+    $('.tab_button').on('click',function(){
+        // change the button state to active for the clicked button
+        $(".tab_button").click(function(){
+          $(this).addClass("active").siblings().removeClass("active");
+        });
+        // filter out positions based on buttons
+        $('#proj tbody tr').show();
+        if(this.id == "ALL"){
+        $('#proj tbody tr').show();
+          }else{
+            // if QB button is clicked, only show the QB
+            if(this.id == "QB"){
+              $('#proj tbody tr').hide();
+              var $rowsNo = $('#proj tbody tr').filter(function () {
+                return $.trim($(this).find('td').eq(1).text()) == "QB"
+              }).show();
+            }
+            // if RB button is clicked, only show the RB
+            if(this.id == "RB"){
+              $('#proj tbody tr').hide();
+              var $rowsNo = $('#proj tbody tr').filter(function () {
+                return $.trim($(this).find('td').eq(1).text()) == "RB"
+              }).show();
+            }
+            // if WR button is clicked, only show the WR
+            if(this.id == "WR"){
+              $('#proj tbody tr').hide();
+              var $rowsNo = $('#proj tbody tr').filter(function () {
+                return $.trim($(this).find('td').eq(1).text()) == "WR"
+              }).show();
+            }
+            // if TE button is clicked, only show the TE
+            if(this.id == "TE"){
+              $('#proj tbody tr').hide();
+              var $rowsNo = $('#proj tbody tr').filter(function () {
+                return $.trim($(this).find('td').eq(1).text()) == "TE"
+              }).show();
+            }
+             // if DST button is clicked, only show the DST
+            if(this.id == "DST"){
+              $('#proj tbody tr').hide();
+              var $rowsNo = $('#proj tbody tr').filter(function () {
+                return $.trim($(this).find('td').eq(1).text()) == "DST"
+              }).show();
+            }
+          }
+      });
+
+    $('form').on('submit', function(event) {
+    event.preventDefault();
+		$.ajax({
+			data : {
+				n_lineups : $('#nlineups').val(),
+				exclude: table.$('.exclude').serialize(),
+				lock: table.$('.lock').serialize(),
+				cap: table.$('.cap').serialize()
+			},
+			type : 'POST',
+			url : '/nfl-draftkings-lineups/',
+			success: function(data) {
+			  optLines = data;
+			  BuildLines(optLines);
+			}
+		})
+		.done(function(data) {
+
+			if (data.error) {
+				$('#errorAlert').text(data.error).show();
+				$('#successAlert').hide();
+			}
+			else {
+				$('#successAlert').text(data.name).show();
+				$('#errorAlert').hide();
+			}
+
+		});
+
+		event.preventDefault();
+
+	});
+
+
+   }); // end document.ready
+
+      function BuildLines(myLines) {
+        var showData = $('#lineups');
+        var lineupItems = myLines.length; // how many lineups are we returning?
+        showData.empty();
+
+        var genRow;
+        genRow = '<div class="container-fluid">';
+
+        $.each(myLines, function (idx, obj) {
+
+          var myRow = $.parseJSON(obj);
+          genRow += '<div class="col-lg-6">';
+          genRow += '<table class="lupdiv"><thead><tr><th class="hplayer">PLAYER</th><th class="hboxes">POS</th><th class="hboxes">SALARY</th></tr></thead><tbody>';
+
+            lineTotal = 0;
+            salaryTotal = 0;
+          $.each(myRow, function (index, value) {
+            //console.log(value.player);
+
+            genRow += '<tr class="luplayerdiv">';
+            genRow += '<td class="lufield lu-player">' + value.Name + '</td>';
+            //genRow += '<td class="lu-id">' + value.Id + '</td>';
+            genRow += '<td class="lufield lu-position">' + value.Position + '</td>';
+            genRow += '<td class="lufield lu-salary">' + value.Salary + '</td>';
+            genRow += '</tr>';
+            lineTotal = lineTotal + value.Projection;
+            salaryTotal = salaryTotal + value.Salary;
+
+          });
+        genRow += '</tbody></table></div>';
+        // console.log(genRow);
+      });
+      genRow += '</div>';
+
+      showData.append(genRow);
+    } // end BuildLines function
+  </script>
+{% endblock %}

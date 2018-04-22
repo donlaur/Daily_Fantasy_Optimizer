@@ -1,0 +1,39 @@
+Driver,Position,ID,Salary,Perc25,Median,Perc75,ProbWin,exclude,lock,count,cap
+Martin Truex Jr.,D,9220774,10600,19,35,47,0.063,Martin Truex Jr.,Martin Truex Jr.,0,100
+Kyle Busch,D,9220775,10500,24.25,40.25,50.25,0.105,Kyle Busch,Kyle Busch,0,100
+Kyle Larson,D,9220776,10300,11,29,39,0.03,Kyle Larson,Kyle Larson,0,100
+Kevin Harvick,D,9220777,9900,24.75,41.25,49.25,0.176,Kevin Harvick,Kevin Harvick,0,100
+Chase Elliott,D,9220778,9800,3,21,35,0.025,Chase Elliott,Chase Elliott,0,100
+Denny Hamlin,D,9220779,9600,22.25,40.25,52.25,0.075,Denny Hamlin,Denny Hamlin,0,100
+Brad Keselowski,D,9220780,9400,27.75,45.75,55.75,0.081,Brad Keselowski,Brad Keselowski,0,100
+Matt Kenseth,D,9220781,9300,12,28,38,0.051,Matt Kenseth,Matt Kenseth,0,100
+Jimmie Johnson,D,9220782,9100,28,44,56,0.048,Jimmie Johnson,Jimmie Johnson,0,100
+Joey Logano,D,9220783,9000,24.5,42.5,52.5,0.118,Joey Logano,Joey Logano,0,100
+Ryan Blaney,D,9220784,8700,6,22,36,0.003,Ryan Blaney,Ryan Blaney,0,100
+Jamie McMurray,D,9220785,8500,9,25,37,0.031,Jamie McMurray,Jamie McMurray,0,100
+Erik Jones,D,9220786,8400,2,18,32,0.007,Erik Jones,Erik Jones,0,100
+Clint Bowyer,D,9220787,8300,-1,15,31,0.001,Clint Bowyer,Clint Bowyer,0,100
+Kurt Busch,D,9220788,8000,23,39,49,0.057,Kurt Busch,Kurt Busch,0,100
+Dale Earnhardt Jr.,D,9220789,7900,15,35,47.5,0.029,Dale Earnhardt Jr.,Dale Earnhardt Jr.,0,100
+Daniel Suarez,D,9220790,7800,16,34,46,0.029,Daniel Suarez,Daniel Suarez,0,100
+Kasey Kahne,D,9220791,7600,19,37,49,0.018,Kasey Kahne,Kasey Kahne,0,100
+Ryan Newman,D,9220792,7300,29,45,57,0.033,Ryan Newman,Ryan Newman,0,100
+Austin Dillon,D,9220793,7000,6.5,23,37,0.003,Austin Dillon,Austin Dillon,0,100
+Ricky Stenhouse Jr.,D,9220794,6900,10,24,36,0.005,Ricky Stenhouse Jr.,Ricky Stenhouse Jr.,0,100
+Trevor Bayne,D,9220795,6700,13,27,41,0.001,Trevor Bayne,Trevor Bayne,0,100
+Ty Dillon,D,9220796,6600,25,39,53,0,Ty Dillon,Ty Dillon,0,100
+Paul Menard,D,9220797,6500,22,39,52,0.005,Paul Menard,Paul Menard,0,100
+Danica Patrick,D,9220798,6400,3.5,16,30,0,Danica Patrick,Danica Patrick,0,100
+AJ Allmendinger,D,9220799,6300,15,31,45,0.004,AJ Allmendinger,AJ Allmendinger,0,100
+Aric Almirola,D,9220800,6000,8,26,40,0.002,Aric Almirola,Aric Almirola,0,100
+Chris Buescher,D,9220801,5900,-2,12,26,0,Chris Buescher,Chris Buescher,0,100
+Michael McDowell,D,9220802,5600,10,24,36.5,0,Michael McDowell,Michael McDowell,0,100
+Matt DiBenedetto,D,9220803,5400,5,15,25,0,Matt DiBenedetto,Matt DiBenedetto,0,100
+Landon Cassill,D,9220804,5300,12,22,34,0,Landon Cassill,Landon Cassill,0,100
+David Ragan,D,9220805,5200,6,20,32,0,David Ragan,David Ragan,0,100
+Cole Whitt,D,9220806,5100,5,13,27,0,Cole Whitt,Cole Whitt,0,100
+Reed Sorenson,D,9220807,4900,10,18,28,0,Reed Sorenson,Reed Sorenson,0,100
+Jeffrey Earnhardt,D,9220808,4800,6,14,22,0,Jeffrey Earnhardt,Jeffrey Earnhardt,0,100
+Brett Moffitt,D,9220809,4700,7,15,25,0,Brett Moffitt,Brett Moffitt,0,100
+Corey Lajoie,D,9220810,4600,6,16,26,0,Corey Lajoie,Corey Lajoie,0,100
+Derrike Cope,D,9220811,4500,5,9,15,0,Derrike Cope,Derrike Cope,0,100

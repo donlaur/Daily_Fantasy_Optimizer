@@ -1,0 +1,79 @@
+/* style.css file */
+body { 
+  min-height: 2000px;
+  padding-top: 70px;
+}
+
+table {
+  padding-top: 1px;
+}
+
+th {  /* table row header */
+  background-color: #e09f3e !important; 
+  color: #fff; 
+  text-transform: 
+  uppercase; 
+  background: none;
+  font-weight: normal;
+  height: 44px;
+}
+td {
+  
+}
+
+/* filters */
+#proj_filter {
+  float: left;
+  position: relative;
+  text-align: left;
+}
+
+/* styles for data highlights */
+.projyellow { /* medium */
+  background-color: #FEF5A8 !important;
+}
+.projgreen { /* good */
+  background-color: #C5F19A !important;
+}
+.projred { /* bad */
+  background-color: #F79494 !important;
+}
+
+/* styles for containers and lineups once generated */
+#lineup-container { /* generated lineups styles */
+  width: 100%;
+  height: 100%;
+}
+.lupdiv {
+  position: relative;
+  float: left;
+  width: 100%;
+  padding: 10px;
+  margin: 10px;
+}
+.luplayerdiv {
+  height: 30px;
+}
+.lu-player {
+  width: 205px !important;
+  text-align: left !important;
+}
+.lufield {
+  width: 55px;
+  padding: 3px;
+  text-align: center;
+}
+.hplayer {
+  width: 205px !important;
+  padding: 3px !important;
+}
+.hboxes {
+  width: 55px;
+  text-align: center;
+  padding: 3px !important;
+}
+.lineuptotals {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 1.1em;
+}

@@ -1,0 +1,259 @@
+{% include 'base.html' %}
+
+{% block extra_stylesheets %}
+  <link href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+  <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.7/css/dataTables.checkboxes.css" rel="stylesheet" />
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-lg-12">
+      <h2>WNBA Fanduel Projections</h2>
+      <!-- Filter buttons -->
+      <div id="filterbtns">
+        <p><button id="ALL" class="tab_button btn btn-default active" type="button">ALL</button>
+        <button id="G" class="tab_button btn btn-default" type="button">G</button>
+        <button id="F" class="tab_button btn btn-default" type="button">F</button></p>
+      </div>
+      <!-- Filter Buttons -->
+      <form class="optimize">
+      <p><input type="text" class="form-control" id="nlineups" placeholder="# Lineups">
+      <button id="Optimize" name="btn" value="opt" class="tab_button btn btn-default" type="submit">Optimize</button></p>
+      </form>
+      <form class='download'>
+      <p><input type="text" class="form-control" id="nlineups_dl" placeholder="# Lineups">
+        <button id="Download" name="btn" value="dl" class="dl_button btn btn-default" type="submit">Download</button></p>
+      </form>
+      <table id="proj" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Position</th>
+	          <th>Team</th>
+	          <th>Opp</th>
+	          <th>Inj</th>
+	          <th>MIN</th>
+	          <th>Safe</th>
+	          <th>PTS</th>
+	          <th>Upside</th>
+	          <th>Salary</th>
+	          <th>Value</th>
+	          <th>Exclude</th>
+	          <th>Lock</th>
+	          <th>Max</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="lineups">Lineups Generated</div>
+{% endblock %}
+
+{% block extra_javascripts %}
+  <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+  $(document).ready(function(){
+    $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+      $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+    });
+
+    // DataTables
+    var table = $('#proj').DataTable({
+      //"processing": true,
+      //"serverSide": true,
+	    "ajax": { "url": "{{ url_for('projections') }}",
+		    "dataSrc": "data"
+	    },
+	    'columnDefs': [{
+         'targets': 11,
+         'searchable': false,
+         'orderable': false,
+         'className': 'dt-body-center',
+         'render': function (data, type, full, meta){
+             return '<input type="checkbox" name="id[]" class="exclude" value="' + $('<div/>').text(data).html() + '">';
+         }
+      },
+      {
+         'targets': 12,
+         'searchable': false,
+         'orderable': false,
+         'className': 'dt-body-center',
+         'render': function (data, type, full, meta){
+             return '<input type="checkbox" name="id[]" class="lock" value="' + $('<div/>').text(data).html() + '">';
+         }
+      },
+      {
+         'targets': 13,
+         'searchable': false,
+         'orderable': false,
+         'className': 'dt-body-center',
+         'render': function (data, type, full, meta){
+             return '<input type="text" name="id[]" class="cap" value="' + $('<div/>').text(data).html() + '">';
+         }
+      }],
+	   'rowCallback': function(row, data, index){
+        var calval = (data[7] / data[9]) * 1000;
+        if(calval < 4 ){
+          $(row).find('td:eq(7)').addClass('projyellow');
+        }
+        if(calval > 4 ){
+          $(row).find('td:eq(7)').addClass('projgreen');
+        }
+        if(calval < 3 ){
+          $(row).find('td:eq(7)').addClass('projred');
+        }
+      },
+      scrollY:        '60vh',
+      scrollCollapse: true,
+      "order": [[ 9, "desc" ]],
+	    "paging": false,
+	    "info": false
+      });  // end DataTable
+
+    // filter functions filter positions
+    $('optimize').on('click',function(){
+      // change the button state to active for the clicked button
+      $(".tab_button").click(function(){
+        $(this).addClass("active").siblings().removeClass("active");
+      });
+      // filter out positions based on buttons
+      $('#proj tbody tr').show();
+      if(this.id == "ALL"){
+        $('#proj tbody tr').show();
+      } else{
+          // if G button is clicked, only show the G
+          if(this.id == "G"){
+            $('#proj tbody tr').hide();
+            var $rowsNo = $('#proj tbody tr').filter(function () {
+              return $.trim($(this).find('td').eq(1).text()) == "G"
+            }).show();
+          } // G button filter
+          // if F button is clicked, only show the F
+          if(this.id == "F"){
+            $('#proj tbody tr').hide();
+            var $rowsNo = $('#proj tbody tr').filter(function () {
+              return $.trim($(this).find('td').eq(1).text()) == "F"
+            }).show();
+          } // F button filter
+        } // end else, buttons that are not all button.
+    }); // end tab_button click functions
+
+    $('.optimize').on('submit', function(event) {
+    event.preventDefault();
+		$.ajax({
+			data : {
+				n_lineups : $('#nlineups').val(),
+				exclude: table.$('.exclude').serialize(),
+				lock: table.$('.lock').serialize(),
+				cap: table.$('.cap').serialize()
+			},
+			type : 'POST',
+			url : '/wnba-fanduel-lineups/',
+			success: function(data) {
+			  optLines = data;
+			  BuildLines(optLines);
+			}
+		})
+		.done(function(data) {
+
+			if (data.error) {
+				$('#errorAlert').text(data.error).show();
+				$('#successAlert').hide();
+			}
+			else {
+				$('#successAlert').text(data.name).show();
+				$('#errorAlert').hide();
+			}
+
+		});
+
+		event.preventDefault();
+
+	});
+	
+	 $('.download').on('submit', function(event) {
+    $.ajax({
+			data : {
+				n_lineups : $('#nlineups_dl').val(),
+				exclude: table.$('.exclude').serialize(),
+				lock: table.$('.lock').serialize(),
+				cap: table.$('.cap').serialize()
+			},
+			type : 'POST',
+			url : '/dl_wnba_fd',
+			success: function(result) {
+			  csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(result);
+        window.open(csvData, 'export.csv');
+		 }
+		})
+		.done(function(data) {
+
+			if (data.error) {
+				$('#errorAlert').text(data.error).show();
+				$('#successAlert').hide();
+			}
+			else {
+				$('#successAlert').text(data.name).show();
+				$('#errorAlert').hide();
+			}
+
+		});
+
+		event.preventDefault();
+
+	});
+
+  }); // end document.ready
+
+  // Functions, buildline to create the outputting lines.
+  function BuildLines(myLines) {
+    var showData = $('#lineups');
+    var lineupItems = myLines.length; // how many lineups are we returning?
+    showData.empty();
+
+    var genRow;
+    genRow = '<div class="container">';
+
+    $.each(myLines, function (idx, obj) {
+
+      var myRow = $.parseJSON(obj);
+      genRow += '<div class="col-lg-4">';
+      genRow += '<table class="lupdiv"><thead><tr><th class="hplayer">Player</th><th class="hboxes">POS</th><th class="hboxes">TEAM</th><th class="hboxes">FDP</th><th class="hboxes">SALARY</th></tr></thead><tbody>';
+
+      lineTotal = 0;
+      salaryTotal = 0;
+      $.each(myRow, function (index, value) {
+        //console.log(value.player);
+
+        genRow += '<tr class="luplayerdiv">';
+        genRow += '<td class="lufield lu-player">' + value.player + '</td>';
+        //genRow += '<div class="lu-id">' + value.Id + '</div>';
+        genRow += '<td class="lufield lu-position">' + value.Position + '</td>';
+        genRow += '<td class="lufield lu-team">' + value.Team + '</td>';
+        //genRow += '<div class="lu-opponent">' + myLine.Opponent + '</div>';
+        // genRow += '<div class="lu-injury">' + myLine.Injury.Indicator + '</div>';
+        //genRow += '<div class="lu-min">' + myLine.min + '</div>';
+        //genRow += '<div class="lu-fdp_floor">' + myLine.fdp_floor + '</div>';
+        genRow += '<td class="lufield lu-fdp">' + value.fdp + '</td>';
+        //genRow += '<div class="lu-fdp_ceiling">' + myLine.fdp_ceiling + '</div>';
+        genRow += '<td class="lufield lu-salary">' + value.Salary + '</td>';
+        //genRow += '<div class="lu-value">' + myLine.Value + '</div>';
+        genRow += '</tr>';
+        lineTotal = lineTotal + value.fdp;
+        salaryTotal = salaryTotal + value.Salary;
+      });
+      genRow += '<tr class="lineuptotals"><td colspan=3>&nbsp;</td><td>' +parseFloat(lineTotal).toFixed(2)+ '</td><td>' + salaryTotal+ '</td></tr>';
+      genRow += '</tbody></table></div>';
+        // console.log(genRow);
+    });
+    genRow += '</div>';
+
+    showData.append(genRow);
+    } // end BuildLines function
+  </script>
+{% endblock %}

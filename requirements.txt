@@ -1,0 +1,7 @@
+flask
+flask_login
+flask_sqlalchemy
+sqlalchemy-datatables
+pandas
+pulp
+
